@@ -6,8 +6,9 @@ class V < Formula
 
   # nvim-treesitter shells out to the `tree-sitter` CLI to build parsers on
   # first launch -- without it, install() fails with "no such file or
-  # directory: 'tree-sitter'".
-  depends_on "tree-sitter"
+  # directory: 'tree-sitter'". Note: `tree-sitter` (no suffix) is just the
+  # C parsing library and ships no binary; the CLI is `tree-sitter-cli`.
+  depends_on "tree-sitter-cli"
 
   # Vendored Neovim binary (arm64 only) -- private copy, not a visible dependency.
   resource "nvim-macos-arm64" do
