@@ -1,6 +1,6 @@
 # v
 
-A minimal, preconfigured Neovim distribution. Installs as its own command (`v`),
+A minimal IDE. Installs as its own command (`v`),
 with Neovim vendored privately inside the package — no separate Neovim install
 required, no dependency shown in `brew list`.
 

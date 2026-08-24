@@ -1,0 +1,57 @@
+name: Update Homebrew formula
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Download release tarball and compute sha256
+        id: sha
+        run: |
+          set -euo pipefail
+          url="https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${GITHUB_REF_NAME}.tar.gz"
+
+          # GitHub generates tag tarballs on first request; retry briefly in case it's not ready yet.
+          for i in $(seq 1 10); do
+            if curl -sL -f -o tarball.tar.gz "$url" && [ -s tarball.tar.gz ]; then
+              break
+            fi
+            sleep 3
+          done
+
+          echo "sha256=$(shasum -a 256 tarball.tar.gz | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Update Formula/v.rb
+        run: |
+          set -euo pipefail
+          # Restrict edits to the lines before the vendored nvim `resource` block,
+          # so the vendored binary's own sha256 is left untouched.
+          sed -i \
+            -e "1,/^  resource /{s|archive/refs/tags/v[0-9][0-9.]*\.tar\.gz|archive/refs/tags/${GITHUB_REF_NAME}.tar.gz|}" \
+            -e "1,/^  resource /{s|sha256 \".*\"|sha256 \"${{ steps.sha.outputs.sha256 }}\"|}" \
+            Formula/v.rb
+
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "formula: update to ${{ github.ref_name }}"
+          branch: "formula-update-${{ github.ref_name }}"
+          title: "formula: update to ${{ github.ref_name }}"
+          body: |
+            Auto-generated after tag `${{ github.ref_name }}` was pushed.
+
+            - Updated release `url` to point at the new tag
+            - Updated `sha256` to match the tag's tarball
+          add-paths: Formula/v.rb
