@@ -14,6 +14,7 @@ class V < Formula
     resource("nvim-macos-arm64").stage(libexec/"nvim-bin")
 
     pkgshare.install "init.lua"
+    pkgshare.install "lua"
 
     (bin/"v").write <<~EOS
       #!/usr/bin/env bash
