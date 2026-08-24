@@ -4,6 +4,11 @@ class V < Formula
   url "https://github.com/snesjhon/v/archive/refs/tags/v0.1.0.tar.gz"
   sha256 "REPLACE_AFTER_TAGGING"
 
+  # nvim-treesitter shells out to the `tree-sitter` CLI to build parsers on
+  # first launch -- without it, install() fails with "no such file or
+  # directory: 'tree-sitter'".
+  depends_on "tree-sitter"
+
   # Vendored Neovim binary (arm64 only) -- private copy, not a visible dependency.
   resource "nvim-macos-arm64" do
     url "https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-macos-arm64.tar.gz"
