@@ -10,6 +10,11 @@ class V < Formula
   # C parsing library and ships no binary; the CLI is `tree-sitter-cli`.
   depends_on "tree-sitter-cli"
 
+  # vtsls provides the TypeScript/JavaScript language server configured in
+  # lua/lsp.lua -- without it, LSP silently fails with "vtsls is not
+  # executable" the moment a JS/TS file is opened.
+  depends_on "vtsls"
+
   # Vendored Neovim binary (arm64 only) -- private copy, not a visible dependency.
   resource "nvim-macos-arm64" do
     url "https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-macos-arm64.tar.gz"
