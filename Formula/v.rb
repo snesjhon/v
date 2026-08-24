@@ -2,7 +2,7 @@ class V < Formula
   desc "A minimal, preconfigured Neovim distribution"
   homepage "https://github.com/snesjhon/v"
   url "https://github.com/snesjhon/v/archive/refs/tags/v0.1.0.tar.gz"
-  sha256 "REPLACE_AFTER_TAGGING"
+  sha256 "6b7bd0a2f0e1e58df5b0b63711a2cb60e53fb95ba0299c8b479d5e51ed1b232c"
 
   # Vendored Neovim binary (arm64 only) -- private copy, not a visible dependency.
   resource "nvim-macos-arm64" do
