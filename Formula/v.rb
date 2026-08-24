@@ -1,8 +1,8 @@
 class V < Formula
   desc "A minimal, preconfigured Neovim distribution"
   homepage "https://github.com/snesjhon/v"
-  url "https://github.com/snesjhon/v/archive/refs/tags/v0.1.0.tar.gz"
-  sha256 "6b7bd0a2f0e1e58df5b0b63711a2cb60e53fb95ba0299c8b479d5e51ed1b232c"
+  url "https://github.com/snesjhon/v/archive/refs/tags/v0.1.1.tar.gz"
+  sha256 "c6efcd6aadaadeb1b24aa636fe9276d21b676a69e2fd6709658d8a9e44ea73a8"
 
   # nvim-treesitter shells out to the `tree-sitter` CLI to build parsers on
   # first launch -- without it, install() fails with "no such file or
