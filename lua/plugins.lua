@@ -4,6 +4,9 @@ vim.pack.add({
   "https://github.com/folke/snacks.nvim",
   "https://github.com/snesjhon/gitlab-nvim-theme",
   "https://github.com/akinsho/bufferline.nvim",
+  -- Pinned to the v1 tag line so the prebuilt Rust fuzzy-matcher binary
+  -- downloads automatically (blink.cmp's main branch tracks an unstable v2).
+  { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range("1") },
 })
 
 -- Load every *.lua file in lua/configs/ as a plugin config module, so

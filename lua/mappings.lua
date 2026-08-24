@@ -1,8 +1,12 @@
-vim.keymap.set("n", "<leader>[", function() require("configs.zen").split("vsplit") end, { desc = "Vertical split" })
+vim.keymap.set("n", "-", function() require("configs.zen").split("vsplit") end, { desc = "Vertical split" })
 vim.keymap.set("n", "<leader>z", function() require("configs.zen").toggle() end, { desc = "Toggle zen mode" })
 vim.keymap.set("n", "<leader>ut", function() require("configs.theme").toggle() end, { desc = "Toggle light/dark theme" })
 vim.keymap.set("n", ",", "<cmd>:bprev<CR>", { desc = "prev" })
 vim.keymap.set("n", ".", "<cmd>:bnext<CR>", { desc = "next" })
+vim.keymap.set("n", "<C-S-w>", "<cmd>bp<bar>bd #<CR>", { desc = "Close buffer" })
+
+vim.keymap.set("n", "<leader>s", "<cmd>w<CR>", { desc = "Save file" })
+vim.keymap.set("n", "<F10>", "<cmd>w<CR>", { desc = "Save file" })
 
 
 -- Search (Snacks picker) --------------------------------------------------
@@ -37,8 +41,9 @@ vim.keymap.set("n", "<leader>go", function() require("snacks").gitbrowse() end, 
 vim.keymap.set("n", "<leader>gb", function() require("snacks").picker.git_branches() end, { desc = "Git branches" })
 vim.keymap.set("n", "<leader>gc", function() require("snacks").picker.git_log() end, { desc = "Git commits (repository)" })
 vim.keymap.set("n", "<leader>gC", function() require("snacks").picker.git_log({ current_file = true, follow = true }) end, { desc = "Git commits (current file)" })
-vim.keymap.set("n", "<leader>gt", function() require("snacks").picker.git_status() end, { desc = "Git status" })
+vim.keymap.set("n", "<leader>gs", function() require("snacks").picker.git_status() end, { desc = "Git status" })
 vim.keymap.set("n", "<leader>gT", function() require("snacks").picker.git_stash() end, { desc = "Git stash" })
+vim.keymap.set("n", "<leader>gg", function() require("configs.lazygit").toggle() end, { desc = "LazyGit" })
 
 
 -- LSP keymaps -----------------------------------------------------------
@@ -48,17 +53,26 @@ vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
     local opts = { buffer = ev.buf }
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-    vim.keymap.set("n", "grr", function() require("snacks").picker.lsp_references() end, opts)
+    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+    vim.keymap.set("n", "gr", function() require("snacks").picker.lsp_references() end, opts)
     vim.keymap.set("n", "gh", vim.lsp.buf.hover, opts)
+    -- native hover() focuses an already-open float on a second call; defer a
+    -- second call so `gl` opens-and-focuses in one keypress instead of two.
+    vim.keymap.set("n", "gl", function()
+      vim.lsp.buf.hover()
+      vim.defer_fn(vim.lsp.buf.hover, 50)
+    end, opts)
     vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
     vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-    vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format { async = true } end, opts)
+    vim.keymap.set("n", "gf", function() vim.lsp.buf.format { async = true } end, opts)
     vim.keymap.set("n", "]d", function() vim.diagnostic.jump { count = 1, float = true } end, opts)
     vim.keymap.set("n", "[d", function() vim.diagnostic.jump { count = -1, float = true } end, opts)
     vim.keymap.set("n", "<leader>d", function() require("snacks").picker.diagnostics_buffer() end, opts)
     vim.keymap.set("n", "<leader>lD", function() require("snacks").picker.diagnostics() end, opts)
     vim.keymap.set("n", "<leader>ls", function() require("snacks").picker.lsp_symbols() end, opts)
-    vim.keymap.set("i", "<C-Space>", vim.lsp.completion.get, opts)
+    -- Insert-mode <C-Space> is handled by blink.cmp's own "default" keymap
+    -- preset (lua/configs/blink.lua); only the normal-mode entry point lives
+    -- here since it needs the diagnostic-float fallback.
     vim.keymap.set("n", "<C-Space>", function()
       local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
       if #vim.diagnostic.get(0, { lnum = lnum }) > 0 then
@@ -66,7 +80,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         return
       end
       vim.cmd("startinsert!") -- append, not insert -- keeps the cursor after the current char
-      vim.lsp.completion.get()
+      require("blink.cmp").show()
     end, opts)
   end,
 })
